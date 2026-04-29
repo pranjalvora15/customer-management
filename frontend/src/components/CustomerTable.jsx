@@ -1,7 +1,19 @@
 import React from 'react';
 import './CustomerTable.css';
 
-function CustomerTable({ customers, onDelete }) {
+function CustomerTable({ customers, onDelete, loading, deletingId }) {
+  if (loading) {
+    return (
+      <div className="table-container">
+        <h2>Customer List</h2>
+        <div className="loading-wrapper">
+          <div className="spinner"></div>
+          <p>Loading customers...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (customers.length === 0) {
     return (
       <div className="table-container">
@@ -34,8 +46,9 @@ function CustomerTable({ customers, onDelete }) {
                   <button
                     className="delete-btn"
                     onClick={() => onDelete(customer.id)}
+                    disabled={deletingId === customer.id}
                   >
-                    Delete
+                    {deletingId === customer.id ? 'Deleting...' : 'Delete'}
                   </button>
                 </td>
               </tr>

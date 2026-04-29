@@ -7,6 +7,7 @@ function CustomerForm({ onCustomerAdded }) {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,8 +19,9 @@ function CustomerForm({ onCustomerAdded }) {
       setError('Phone number must be 10 digits and start with 7, 8, or 9.');
       return;
     }
+    setSubmitting(true);
     try {
-      await axios.post('http://localhost:5000/customers', { name, email, phone });
+      await axios.post(`${process.env.REACT_APP_API_URL}/customers`, { name, email, phone });
       setName('');
       setEmail('');
       setPhone('');
@@ -27,6 +29,8 @@ function CustomerForm({ onCustomerAdded }) {
       onCustomerAdded();
     } catch (err) {
       setError('Failed to add customer. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -42,6 +46,7 @@ function CustomerForm({ onCustomerAdded }) {
             placeholder="Enter name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            disabled={submitting}
           />
         </div>
         <div className="form-group">
@@ -51,6 +56,7 @@ function CustomerForm({ onCustomerAdded }) {
             placeholder="Enter email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={submitting}
           />
         </div>
         <div className="form-group">
@@ -60,9 +66,12 @@ function CustomerForm({ onCustomerAdded }) {
             placeholder="Enter phone number"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            disabled={submitting}
           />
         </div>
-        <button type="submit" className="submit-btn">Add Customer</button>
+        <button type="submit" className="submit-btn" disabled={submitting}>
+          {submitting ? 'Adding...' : 'Add Customer'}
+        </button>
       </form>
     </div>
   );

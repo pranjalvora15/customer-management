@@ -7,13 +7,18 @@ import './App.css';
 
 function App() {
   const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchCustomers = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/customers');
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/customers`);
       setCustomers(response.data);
     } catch (err) {
       console.error('Failed to fetch customers:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -22,11 +27,14 @@ function App() {
   }, []);
 
   const handleDelete = async (id) => {
+    setDeletingId(id);
     try {
-      await axios.delete(`http://localhost:5000/customers/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/customers/${id}`);
       fetchCustomers();
     } catch (err) {
       console.error('Failed to delete customer:', err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -35,7 +43,7 @@ function App() {
       <Navbar />
       <main className="main-content">
         <CustomerForm onCustomerAdded={fetchCustomers} />
-        <CustomerTable customers={customers} onDelete={handleDelete} />
+        <CustomerTable customers={customers} onDelete={handleDelete} loading={loading} deletingId={deletingId} />
       </main>
     </div>
   );
