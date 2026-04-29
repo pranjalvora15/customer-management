@@ -14,7 +14,7 @@ function App() {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/customers`);
-      setCustomers(response.data);
+      setCustomers(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       console.error('Failed to fetch customers:', err);
     } finally {
